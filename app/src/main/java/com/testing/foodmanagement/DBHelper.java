@@ -14,7 +14,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DBNAME = "Canteen.db";
 
     public DBHelper(Context context) {
-        super(context, DBNAME, null, 2);
+        super(context, DBNAME, null, 3);
     }
 
     @Override
@@ -50,6 +50,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 "ingredients TEXT, " +
                 "available INTEGER, " +
                 "image TEXT)");
+        MyDB.execSQL("CREATE TABLE Branches(" +
+                "branchName TEXT, " +
+                "phone TEXT, " +
+                "email TEXT, " +
+                "openHours TEXT, " +
+                "location TEXT)"); // Added Branches table
     }
 
     @Override
@@ -58,6 +64,7 @@ public class DBHelper extends SQLiteOpenHelper {
         MyDB.execSQL("DROP TABLE IF EXISTS Orders");
         MyDB.execSQL("DROP TABLE IF EXISTS finalOrder");
         MyDB.execSQL("DROP TABLE IF EXISTS food_items");
+        MyDB.execSQL("DROP TABLE IF EXISTS Branches");
         onCreate(MyDB); // Recreate the tables after dropping
     }
 
@@ -128,5 +135,39 @@ public class DBHelper extends SQLiteOpenHelper {
     public Cursor getData(String email) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
         return MyDB.rawQuery("SELECT * FROM Users WHERE email=?", new String[]{email});
+    }
+    // Branch-related methods
+    public void addBranch(Branch branch) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("branchName", branch.getBranchName());
+        values.put("phone", branch.getPhone());
+        values.put("email", branch.getEmail());
+        values.put("openHours", branch.getOpenHours());
+        values.put("location", branch.getLocation());
+
+        db.insert("Branches", null, values);
+        db.close();
+    }
+
+    public List<Branch> getAllBranches() {
+        List<Branch> branchList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM Branches", null);
+        if (cursor.moveToFirst()) {
+            do {
+                @SuppressLint("Range") String branchName = cursor.getString(cursor.getColumnIndex("branchName"));
+                @SuppressLint("Range") String phone = cursor.getString(cursor.getColumnIndex("phone"));
+                @SuppressLint("Range") String email = cursor.getString(cursor.getColumnIndex("email"));
+                @SuppressLint("Range") String openHours = cursor.getString(cursor.getColumnIndex("openHours"));
+                @SuppressLint("Range") String location = cursor.getString(cursor.getColumnIndex("location"));
+
+                Branch branch = new Branch(branchName, phone, email, openHours, location);
+                branchList.add(branch);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return branchList;
     }
 }

@@ -36,5 +36,13 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        CardView addBranchCard = findViewById(R.id.addBranch);
+        addBranchCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AdminDashboardActivity.this, AddBranchActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

@@ -71,6 +71,16 @@
             </intent-filter>
         </activity>
 
+        <!-- Add Branch activity -->
+        <activity
+            android:name=".AddBranchActivity"
+            android:exported="true"/>
+
+        <!-- Select Location activity -->
+        <activity
+            android:name=".SelectLocationActivity"
+            android:exported="true"/>
+
         <!-- API Key meta-data -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
