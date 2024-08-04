@@ -81,6 +81,10 @@
             android:name=".SelectLocationActivity"
             android:exported="true"/>
 
+        <activity
+            android:name=".ViewBranchesActivity"
+            android:exported="true"/>
+
         <!-- API Key meta-data -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
