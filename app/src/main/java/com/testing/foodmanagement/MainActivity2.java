@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +28,8 @@ import java.util.List;
 public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallback {
 
     private LinearLayout linearLayoutRecentlyAdded;
+    private CardView cardViewFoodItems;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,16 @@ public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallba
             mapFragment.getMapAsync(this);
         }
         linearLayoutRecentlyAdded = findViewById(R.id.linearLayoutRecentlyAdded);
+        cardViewFoodItems = findViewById(R.id.cardViewFoodItems);
         displayRecentlyAddedItems();
+
+        cardViewFoodItems.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity2.this, CustomerMenuActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -63,6 +75,7 @@ public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallba
                 }
             }
         });
+
     }
 
     private void displayRecentlyAddedItems() {

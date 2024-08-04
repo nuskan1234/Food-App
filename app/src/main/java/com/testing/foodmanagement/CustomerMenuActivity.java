@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ViewMenuActivity extends AppCompatActivity {
+public class CustomerMenuActivity extends AppCompatActivity {
     private GridView gridViewFoodItems;
     private FoodItemAdapter foodItemAdapter;
     private List<FoodItem> foodItemList;
@@ -15,7 +15,7 @@ public class ViewMenuActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_menu);
+        setContentView(R.layout.activity_customer_view_menu);
 
         gridViewFoodItems = findViewById(R.id.gridViewFoodItems);
 
@@ -27,16 +27,14 @@ public class ViewMenuActivity extends AppCompatActivity {
         foodItemAdapter = new FoodItemAdapter(this, foodItemList);
         gridViewFoodItems.setAdapter(foodItemAdapter);
 
-        // Load food items from the database
-        loadFoodItems();
-
+        // Load available food items from the database
+        loadAvailableFoodItems();
     }
 
-    private void loadFoodItems() {
+    private void loadAvailableFoodItems() {
         foodItemList.clear();
-        List<FoodItem> items = dbHelper.getAllFoodItems(); // Implement this method in DBHelper
+        List<FoodItem> items = dbHelper.getAvailableFoodItems(); // Fetch available food items
         foodItemList.addAll(items);
         foodItemAdapter.notifyDataSetChanged();
     }
-
 }
