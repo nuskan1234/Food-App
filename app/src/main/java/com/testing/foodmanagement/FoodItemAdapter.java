@@ -25,13 +25,17 @@ public class FoodItemAdapter extends ArrayAdapter<FoodItem> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.food_item_layout, parent, false);
+            convertView = inflater.inflate(R.layout.fragment_admin_add_food, parent, false);
         }
 
         ImageView imageView = convertView.findViewById(R.id.foodImageView);
         TextView textViewName = convertView.findViewById(R.id.textViewName);
         TextView textViewCategory = convertView.findViewById(R.id.textViewCategory);
         TextView textViewPrice = convertView.findViewById(R.id.textViewPrice);
+
+        textViewCategory.setVisibility(View.VISIBLE);
+        textViewPrice.setVisibility(View.VISIBLE);
+        textViewName.setVisibility(View.VISIBLE);
 
         FoodItem foodItem = foodItemList.get(position);
 

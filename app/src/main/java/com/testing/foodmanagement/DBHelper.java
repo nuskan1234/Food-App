@@ -33,7 +33,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 "email TEXT, " +
                 "itemName TEXT, " +
                 "itemPrice TEXT, " +
-                "itemQuantity TEXT)");
+                "itemQuantity TEXT,"+
+                "branch TEXT)");
 
         MyDB.execSQL("CREATE TABLE finalOrder(" +
                 "cur_date DATE DEFAULT CURRENT_DATE, " +
@@ -52,7 +53,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "available INTEGER, " +
                 "image TEXT)");
         MyDB.execSQL("CREATE TABLE Branches(" +
-                "branchName TEXT, " +
+                "branchName TEXT PRIMARY KEY, " +
                 "phone TEXT, " +
                 "email TEXT, " +
                 "openHours TEXT, " +
@@ -172,5 +173,37 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return branchList;
+    }
+    public List<FoodItem> getLastFiveAddedFoodItems() {
+        List<FoodItem> foodItemList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(
+                "food_items",
+                null,
+                null,
+                null,
+                null,
+                null,
+                "id DESC",
+                "5"
+        );
+        if (cursor.moveToFirst()) {
+            do {
+                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex("id"));
+                @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex("name"));
+                @SuppressLint("Range") String category = cursor.getString(cursor.getColumnIndex("category"));
+                @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex("description"));
+                @SuppressLint("Range") double price = cursor.getDouble(cursor.getColumnIndex("price"));
+                @SuppressLint("Range") String ingredients = cursor.getString(cursor.getColumnIndex("ingredients"));
+                @SuppressLint("Range") boolean available = cursor.getInt(cursor.getColumnIndex("available")) > 0;
+                @SuppressLint("Range") String imageUri = cursor.getString(cursor.getColumnIndex("image"));
+
+                FoodItem item = new FoodItem(id, name, category, description, price, ingredients, available, imageUri);
+                foodItemList.add(item);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return foodItemList;
     }
 }
