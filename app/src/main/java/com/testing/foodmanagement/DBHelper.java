@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "email TEXT, " +
                 "openHours TEXT, " +
                 "location TEXT)"); // Added Branches table
+        Log.d("DBHelper", "Database tables created.");
     }
 
     @Override
@@ -137,7 +139,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return MyDB.rawQuery("SELECT * FROM Users WHERE email=?", new String[]{email});
     }
     // Branch-related methods
-    public void addBranch(Branch branch) {
+    public boolean addBranch(Branch branch) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("branchName", branch.getBranchName());
@@ -146,8 +148,9 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put("openHours", branch.getOpenHours());
         values.put("location", branch.getLocation());
 
-        db.insert("Branches", null, values);
+        long result = db.insert("Branches", null, values);
         db.close();
+        return result != -1; // Return true if insert was successful
     }
 
     public List<Branch> getAllBranches() {
