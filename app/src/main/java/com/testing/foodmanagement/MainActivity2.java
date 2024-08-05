@@ -6,11 +6,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -29,6 +33,7 @@ public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallba
 
     private LinearLayout linearLayoutRecentlyAdded;
     private CardView cardViewFoodItems;
+    private EditText searchEditText;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -42,8 +47,11 @@ public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallba
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
         linearLayoutRecentlyAdded = findViewById(R.id.linearLayoutRecentlyAdded);
         cardViewFoodItems = findViewById(R.id.cardViewFoodItems);
+        searchEditText = findViewById(R.id.search_edit_text); // Make sure this matches your EditText ID
+
         displayRecentlyAddedItems();
 
         cardViewFoodItems.setOnClickListener(new View.OnClickListener() {
@@ -51,6 +59,18 @@ public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallba
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity2.this, CustomerMenuActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    String query = searchEditText.getText().toString();
+                    performSearch(query);
+                    return true;
+                }
+                return false;
             }
         });
     }
@@ -76,6 +96,12 @@ public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
+    }
+
+    private void performSearch(String query) {
+        // Handle search logic here
+        Toast.makeText(MainActivity2.this, "Searching for: " + query, Toast.LENGTH_SHORT).show();
+        // For example, start a new activity to show search results or filter the current list
     }
 
     private void displayRecentlyAddedItems() {
