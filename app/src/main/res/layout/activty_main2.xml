@@ -199,8 +199,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardElevation="4dp"
-                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="0dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackground">
@@ -232,6 +232,7 @@
                     </HorizontalScrollView>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+
 
             <!-- Promotions Section -->
             <TextView
