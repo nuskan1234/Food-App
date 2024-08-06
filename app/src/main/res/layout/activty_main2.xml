@@ -48,74 +48,42 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Categories -->
-            <TextView
+            <!-- Categories Card View -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_view_categories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Categories"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:paddingBottom="16dp" />
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="0dp">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-                    <!-- Category Items -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginEnd="16dp"
-                        android:gravity="center">
+                        android:paddingBottom="16dp"
+                        android:text="Categories"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
-                        <ImageView
-                            android:layout_width="60dp"
-                            android:layout_height="60dp"
-                            android:src="@drawable/ic_category_placeholder"
-                            android:contentDescription="Category Image" />
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="16dp">
 
-                        <TextView
+                        <LinearLayout
+                            android:id="@+id/linearLayoutCategories"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Category"
-                            android:textSize="14sp"
-                            android:layout_marginTop="8dp" />
-                    </LinearLayout>
-
-                    <!-- Repeat similar blocks for more categories -->
-                    <!-- Example: -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginEnd="16dp"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:layout_width="60dp"
-                            android:layout_height="60dp"
-                            android:src="@drawable/ic_category_placeholder"
-                            android:contentDescription="Category Image" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Breakfast"
-                            android:textSize="14sp"
-                            android:layout_marginTop="8dp" />
-                    </LinearLayout>
-
-                    <!-- Add more categories as needed -->
-
+                            android:orientation="horizontal">
+                        </LinearLayout>
+                    </HorizontalScrollView>
                 </LinearLayout>
-            </HorizontalScrollView>
+            </androidx.cardview.widget.CardView>
 
             <!-- Filter Buttons -->
             <HorizontalScrollView

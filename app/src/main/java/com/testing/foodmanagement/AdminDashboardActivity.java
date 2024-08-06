@@ -19,6 +19,25 @@ public class AdminDashboardActivity extends AppCompatActivity {
         cardViewMenu = findViewById(R.id.card_view_menu);
 
         // Set a click listener on the CardView
+
+        CardView cardAddCate = findViewById(R.id.card_add_categories);
+        cardAddCate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AdminDashboardActivity.this, AddCategoryActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        CardView viewCateCard = findViewById(R.id.card_view_categories);
+        viewCateCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AdminDashboardActivity.this, ViewCategoryActivity.class);
+                startActivity(intent);
+            }
+        });
+
         cardViewMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

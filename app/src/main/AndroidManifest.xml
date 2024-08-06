@@ -53,6 +53,19 @@
             android:exported="false"/>
 
         <activity
+            android:name=".AddCategoryActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".ViewCategoryActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".CategoryFoodItemsActivity"
+            android:exported="true"/>
+
+
+
+        <activity
             android:name=".ViewMenuActivity"
             android:exported="false"/>
 
@@ -70,6 +83,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+
+
 
         <!-- Add Branch activity -->
         <activity

@@ -27,6 +27,8 @@ import java.util.List;
 public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallback {
 
     private LinearLayout linearLayoutRecentlyAdded;
+
+    private LinearLayout linearLayoutCategories;
     private CardView cardViewFoodItems;
 
     @SuppressLint("MissingInflatedId")
@@ -43,7 +45,9 @@ public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallba
         }
         linearLayoutRecentlyAdded = findViewById(R.id.linearLayoutRecentlyAdded);
         cardViewFoodItems = findViewById(R.id.cardViewFoodItems);
+        linearLayoutCategories = findViewById(R.id.linearLayoutCategories);
         displayRecentlyAddedItems();
+        displayCategories();
 
         cardViewFoodItems.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +57,7 @@ public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallba
             }
         });
     }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -75,6 +80,46 @@ public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallba
             }
         });
     }
+
+    private void displayCategories() {
+        DBHelper dbHelper = new DBHelper(this);
+        List<Category> categories = dbHelper.getAllCategories();
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        for (Category category : categories) {
+            View categoryView = inflater.inflate(R.layout.categories, linearLayoutCategories, false);
+
+            ImageView categoryImageView = categoryView.findViewById(R.id.categoryImageView);
+            TextView textViewCategoryName = categoryView.findViewById(R.id.categoryNameTextView);
+
+            // Decode the byte array into a bitmap
+            byte[] imageByteArray = category.getCategoryImage();
+            if (imageByteArray != null && imageByteArray.length > 0) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.length);
+                categoryImageView.setImageBitmap(bitmap);
+            } else {
+                // Set a default image or placeholder if the imageByteArray is null or empty
+                categoryImageView.setImageResource(R.drawable.ic_category_placeholder);
+            }
+
+            textViewCategoryName.setText(category.getCategoryName());
+
+            // Set the OnClickListener for the category view
+            categoryView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity2.this, CategoryFoodItemsActivity.class);
+                    intent.putExtra("categoryName", category.getCategoryName());
+                    startActivity(intent);
+                }
+            });
+
+            linearLayoutCategories.addView(categoryView);
+        }
+    }
+
+
+
 
     private void displayRecentlyAddedItems() {
         DBHelper dbHelper = new DBHelper(this);
@@ -109,3 +154,4 @@ public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 }
+

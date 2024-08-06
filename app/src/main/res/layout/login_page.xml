@@ -121,7 +121,7 @@
                 android:layout_width="220dp"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:text="Login"
+                android:text="Sign Up"
                 android:textAllCaps="false"
                 android:textColor="#2747FB"
                 android:textSize="24sp"
