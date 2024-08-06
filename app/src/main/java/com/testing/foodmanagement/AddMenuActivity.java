@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -25,7 +26,7 @@ public class AddMenuActivity extends AppCompatActivity {
     private EditText editTextName, editTextCategory, editTextDescription, editTextPrice, editTextIngredients;
     private CheckBox checkBoxAvailable;
     private ImageView imageView;
-    private Uri imageUri;
+    private Bitmap selectedImageBitmap;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -64,15 +65,21 @@ public class AddMenuActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null) {
-            imageUri = data.getData();
+            Uri imageUri = data.getData();
             try {
                 InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-                imageView.setImageBitmap(bitmap);
+                selectedImageBitmap = BitmapFactory.decodeStream(imageStream);
+                imageView.setImageBitmap(selectedImageBitmap);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private byte[] convertImageToByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        return stream.toByteArray();
     }
 
     private void addItemToDatabase() {
@@ -83,16 +90,17 @@ public class AddMenuActivity extends AppCompatActivity {
         String ingredients = editTextIngredients.getText().toString().trim();
         boolean available = checkBoxAvailable.isChecked();
 
-        if (name.isEmpty() || category.isEmpty() || description.isEmpty() || priceString.isEmpty() || ingredients.isEmpty() || imageUri == null) {
+        if (name.isEmpty() || category.isEmpty() || description.isEmpty() || priceString.isEmpty() || ingredients.isEmpty() || selectedImageBitmap == null) {
             Toast.makeText(this, "Please fill all fields and select an image.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         double price = Double.parseDouble(priceString);
+        byte[] imageByteArray = convertImageToByteArray(selectedImageBitmap);
 
         // Save the data to your database here
         DBHelper dbHelper = new DBHelper(this);
-        dbHelper.addFoodItem(new FoodItem(0, name, category, description, price, ingredients, available, imageUri.toString()));
+        dbHelper.addFoodItem(new FoodItem(0, name, category, description, price, ingredients, available, imageByteArray));
 
         Toast.makeText(this, "Item added successfully!", Toast.LENGTH_SHORT).show();
         finish();

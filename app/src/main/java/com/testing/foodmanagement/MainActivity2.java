@@ -22,7 +22,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.InputStream;
 import java.util.List;
 
 public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallback {
@@ -75,7 +74,6 @@ public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallba
                 }
             }
         });
-
     }
 
     private void displayRecentlyAddedItems() {
@@ -93,13 +91,14 @@ public class MainActivity2 extends AppCompatActivity implements OnMapReadyCallba
 
             textViewName.setVisibility(View.VISIBLE);
 
-            // Load the image from the Uri
-            try {
-                InputStream imageStream = getContentResolver().openInputStream(Uri.parse(foodItem.getImageUri()));
-                Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
+            // Decode the byte array into a bitmap
+            byte[] imageByteArray = foodItem.getImage();
+            if (imageByteArray != null && imageByteArray.length > 0) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.length);
                 foodImageView.setImageBitmap(bitmap);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
+                // Set a default image or placeholder if the imageByteArray is null or empty
+                foodImageView.setImageResource(R.drawable.noodles);
             }
 
             textViewName.setText(foodItem.getName());

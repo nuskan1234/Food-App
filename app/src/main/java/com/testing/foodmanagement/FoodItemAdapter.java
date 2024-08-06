@@ -1,6 +1,8 @@
 package com.testing.foodmanagement;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,18 +45,12 @@ public class FoodItemAdapter extends ArrayAdapter<FoodItem> {
         textViewCategory.setText(foodItem.getCategory());
         textViewPrice.setText(String.valueOf(foodItem.getPrice()));
 
-        try {
-            String imageUri = foodItem.getImageUri();
-            if (imageUri != null && !imageUri.isEmpty()) {
-                int imageResourceId = Integer.parseInt(imageUri);
-                imageView.setImageResource(imageResourceId);
-            } else {
-                // Set a default image or placeholder if the imageUri is null or empty
-                imageView.setImageResource(R.drawable.noodles);
-            }
-        } catch (NumberFormatException e) {
-            Log.e(TAG, "Invalid image URI for food item: " + foodItem.getName(), e);
-            // Set a default image or placeholder if parsing fails
+        byte[] imageByteArray = foodItem.getImage();
+        if (imageByteArray != null && imageByteArray.length > 0) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.length);
+            imageView.setImageBitmap(bitmap);
+        } else {
+            // Set a default image or placeholder if the imageByteArray is null or empty
             imageView.setImageResource(R.drawable.noodles);
         }
 
