@@ -4,9 +4,11 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -20,6 +22,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 public class signupJava extends AppCompatActivity {
     private static final int REQUEST_CAMERA_PERMISSION = 100;
 
@@ -29,6 +35,7 @@ public class signupJava extends AppCompatActivity {
     ImageView profileImageView;
     DBHelper DB;
     public static String SIGNUPEMAIL = "";
+    private Bitmap profileBitmap;
 
     private ActivityResultLauncher<Intent> takePictureLauncher;
     private ActivityResultLauncher<Intent> pickGalleryLauncher;
@@ -56,8 +63,8 @@ public class signupJava extends AppCompatActivity {
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Bundle extras = result.getData().getExtras();
-                        Bitmap imageBitmap = (Bitmap) extras.get("data");
-                        profileImageView.setImageBitmap(imageBitmap);
+                        profileBitmap = (Bitmap) extras.get("data");
+                        profileImageView.setImageBitmap(profileBitmap);
                     }
                 }
         );
@@ -67,7 +74,13 @@ public class signupJava extends AppCompatActivity {
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri selectedImage = result.getData().getData();
-                        profileImageView.setImageURI(selectedImage);
+                        try {
+                            InputStream imageStream = getContentResolver().openInputStream(selectedImage);
+                            profileBitmap = BitmapFactory.decodeStream(imageStream);
+                            profileImageView.setImageBitmap(profileBitmap);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
         );
@@ -100,7 +113,14 @@ public class signupJava extends AppCompatActivity {
             } else {
                 Boolean checkemail = DB.checkEmail(emailStr);
                 if (!checkemail) {
-                    Boolean insert = DB.insertData(fnameStr, lnameStr, emailStr, passStr, phoneStr, addressStr);
+                    byte[] imageBytes = null;
+                    if (profileBitmap != null) {
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        profileBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                        imageBytes = stream.toByteArray();
+                    }
+
+                    Boolean insert = DB.insertData(fnameStr, lnameStr, emailStr, passStr, phoneStr, addressStr, imageBytes);
                     if (insert) {
                         Toast.makeText(signupJava.this, "Registered Successfully", Toast.LENGTH_LONG).show();
                         SIGNUPEMAIL = emailStr;

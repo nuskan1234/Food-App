@@ -26,7 +26,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 "email TEXT PRIMARY KEY, " +
                 "password TEXT, " +
                 "phoneNo TEXT, " +
-                "address TEXT)");
+                "address TEXT, " +
+                "profile_image BLOB)");
 
         MyDB.execSQL("CREATE TABLE Orders(" +
                 "orderId INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -112,7 +113,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return foodItemList;
     }
 
-    public boolean insertData(String firstName, String lastName, String email, String password, String phoneNo, String address) {
+    public boolean insertData(String firstName, String lastName, String email, String password, String phoneNo, String address, byte[] profileImage) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("firstName", firstName);
@@ -121,6 +122,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("password", password);
         contentValues.put("phoneNo", phoneNo);
         contentValues.put("address", address);
+        contentValues.put("profile_image", profileImage);
         long result = MyDB.insert("Users", null, contentValues);
         return result != -1;
     }
@@ -135,6 +137,17 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase MyDB = this.getWritableDatabase();
         Cursor cursor = MyDB.rawQuery("SELECT * FROM Users WHERE email=? AND password=?", new String[]{email, password});
         return cursor.getCount() > 0;
+    }
+
+    public byte[] getUserProfileImage(String email) {
+        SQLiteDatabase MyDB = this.getReadableDatabase();
+        Cursor cursor = MyDB.rawQuery("SELECT profile_image FROM Users WHERE email=?", new String[]{email});
+        if (cursor != null && cursor.moveToFirst()) {
+            byte[] image = cursor.getBlob(0);
+            cursor.close();
+            return image;
+        }
+        return null;
     }
 
     public Cursor getData(String email) {
