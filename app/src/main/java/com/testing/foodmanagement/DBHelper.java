@@ -6,6 +6,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "email TEXT, " +
                 "itemName TEXT, " +
                 "itemPrice TEXT, " +
-                "itemQuantity TEXT,"+
+                "itemQuantity TEXT," +
                 "branch TEXT)");
 
         MyDB.execSQL("CREATE TABLE finalOrder(" +
@@ -62,7 +64,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 "openHours TEXT, " +
                 "location TEXT)");
 
-        // Add the new Category table creation
         MyDB.execSQL("CREATE TABLE Categories(" +
                 "categoryId INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "categoryName TEXT, " +
@@ -81,6 +82,7 @@ public class DBHelper extends SQLiteOpenHelper {
         MyDB.execSQL("DROP TABLE IF EXISTS Categories");
         onCreate(MyDB);
     }
+
     public void addCategory(Category category) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -89,8 +91,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         long result = db.insert("Categories", null, values);
         db.close();
-
     }
+
     public List<Category> getAllCategories() {
         List<Category> categoryList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -283,7 +285,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return foodItemList;
     }
 
-
     public List<FoodItem> getAvailableFoodItems() {
         List<FoodItem> foodItemList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -306,5 +307,25 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return foodItemList;
+    }
+
+    // Add the method to get a food item by its name
+    public FoodItem getFoodItemByName(String itemName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM food_items WHERE name = ?", new String[]{itemName});
+        if (cursor != null && cursor.moveToFirst()) {
+            @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex("id"));
+            @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex("name"));
+            @SuppressLint("Range") String category = cursor.getString(cursor.getColumnIndex("category"));
+            @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex("description"));
+            @SuppressLint("Range") double price = cursor.getDouble(cursor.getColumnIndex("price"));
+            @SuppressLint("Range") String ingredients = cursor.getString(cursor.getColumnIndex("ingredients"));
+            @SuppressLint("Range") boolean available = cursor.getInt(cursor.getColumnIndex("available")) > 0;
+            @SuppressLint("Range") byte[] image = cursor.getBlob(cursor.getColumnIndex("image"));
+
+            cursor.close();
+            return new FoodItem(id, name, category, description, price, ingredients, available, image);
+        }
+        return null;
     }
 }

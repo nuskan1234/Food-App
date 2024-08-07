@@ -29,7 +29,19 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    packagingOptions {
+        exclude ("META-INF/NOTICE.md")
+        exclude ("META-INF/NOTICE")
+        exclude ("META-INF/NOTICE.txt")
+        exclude ("META-INF/LICENSE.md")
+        exclude ("META-INF/LICENSE")
+        exclude ("META-INF/LICENSE.txt")
+    }
 }
+
+
+
+
 
 dependencies {
 
@@ -49,7 +61,8 @@ dependencies {
     implementation ("androidx.exifinterface:exifinterface:1.3.0")
 
 
-
+    implementation ("com.sun.mail:android-mail:1.6.7")
+    implementation ("com.sun.mail:android-activation:1.6.7")
 
 
 

@@ -63,7 +63,9 @@
             android:name=".CategoryFoodItemsActivity"
             android:exported="true"/>
 
-
+        <activity
+            android:name=".FoodItemDetailActivity"
+            android:exported="true"/>
 
         <activity
             android:name=".ViewMenuActivity"
