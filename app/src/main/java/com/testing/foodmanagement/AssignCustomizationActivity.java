@@ -69,7 +69,7 @@ public class AssignCustomizationActivity extends AppCompatActivity {
                     customizationIds.add(customization.getId());
                 }
                 Log.d("AssignCustomizationActivity", "Customization IDs to assign: " + customizationIds);
-                dbHelper.assignCustomizationsToFoodItem( foodId, customizationIds);
+                dbHelper.assignCustomizationsToFoodItem(foodId, customizationIds);
                 Toast.makeText(this, "Customizations assigned successfully", Toast.LENGTH_SHORT).show();
                 finish();
             } else {
@@ -84,7 +84,7 @@ public class AssignCustomizationActivity extends AppCompatActivity {
         private final LayoutInflater inflater;
 
         public CustomizationAdapter(Context context, List<Customization> customizations) {
-            super(context, R.layout.customization_item, customizations);
+            super(context, R.layout.assign_customization_item, customizations);
             this.customizations = customizations;
             this.inflater = LayoutInflater.from(context);
         }
@@ -106,9 +106,19 @@ public class AssignCustomizationActivity extends AppCompatActivity {
             textViewPrice.setText(String.format(Locale.getDefault(), "%.2f", customization.getPrice()));
             checkBoxSelected.setChecked(selectedCustomizations.contains(customization));
 
+            // Ensure that checkbox state is updated when scrolling
+            checkBoxSelected.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    if (!selectedCustomizations.contains(customization)) {
+                        selectedCustomizations.add(customization);
+                    }
+                } else {
+                    selectedCustomizations.remove(customization);
+                }
+                Log.d("AssignCustomizationActivity", "Selected Customizations: " + selectedCustomizations);
+            });
+
             return convertView;
         }
     }
 }
-
-
