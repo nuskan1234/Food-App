@@ -173,9 +173,19 @@ public class AddMenuActivity extends AppCompatActivity {
 
         // Save the data to your database here
         DBHelper dbHelper = new DBHelper(this);
-        dbHelper.addFoodItem(new FoodItem(0, name, category, description, price, ingredients, available, imageByteArray));
+        int foodId = dbHelper.addFoodItem(new FoodItem(0, name, category, description, price, ingredients, available, imageByteArray));
 
-        Toast.makeText(this, "Item added successfully!", Toast.LENGTH_SHORT).show();
-        finish();
+        if (foodId != -1) {
+            Toast.makeText(this, "Item added successfully!", Toast.LENGTH_SHORT).show();
+            // Start AssignCustomizationActivity and pass the foodId
+            Intent intent = new Intent(AddMenuActivity.this, AssignCustomizationActivity.class);
+            intent.putExtra("FOOD_ID", foodId);
+            startActivity(intent);
+            Log.d("AddMenuActivity", "Food ID to pass: " + foodId);
+
+            finish(); // Optional: close the current activity if not needed anymore
+        } else {
+            Toast.makeText(this, "Failed to add item.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

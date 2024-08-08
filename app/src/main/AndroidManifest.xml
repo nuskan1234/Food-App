@@ -105,6 +105,14 @@
             android:name=".CustomerMenuActivity"
             android:exported="true"/>
 
+        <activity
+            android:name=".AssignCustomizationActivity"
+            android:exported="true"/>
+
+        <activity
+            android:name=".CustomizationActivity"
+            android:exported="true"/>
+
         <!-- API Key meta-data -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"

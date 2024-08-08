@@ -15,11 +15,12 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DBNAME = "Canteen.db";
 
     public DBHelper(Context context) {
-        super(context, DBNAME, null, 4);
+        super(context, DBNAME, null, 6);
     }
 
     @Override
     public void onCreate(SQLiteDatabase MyDB) {
+        checkDatabase();
         MyDB.execSQL("CREATE TABLE Users(" +
                 "firstName TEXT, " +
                 "lastName TEXT, " +
@@ -67,6 +68,17 @@ public class DBHelper extends SQLiteOpenHelper {
                 "categoryId INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "categoryName TEXT, " +
                 "categoryImage BLOB)");
+        MyDB.execSQL("CREATE TABLE Customizations(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "name TEXT, " +
+                "price REAL)");
+
+        MyDB.execSQL("CREATE TABLE FoodCustomizations(" +
+                "foodItemId INTEGER, " +
+                "customizationId INTEGER, " +
+                "FOREIGN KEY(foodItemId) REFERENCES food_items(id), " +
+                "FOREIGN KEY(customizationId) REFERENCES Customizations(id))");
+
 
         Log.d("DBHelper", "Database tables created.");
     }
@@ -79,6 +91,8 @@ public class DBHelper extends SQLiteOpenHelper {
         MyDB.execSQL("DROP TABLE IF EXISTS food_items");
         MyDB.execSQL("DROP TABLE IF EXISTS Branches");
         MyDB.execSQL("DROP TABLE IF EXISTS Categories");
+        MyDB.execSQL("DROP TABLE IF EXISTS Customizations");
+        MyDB.execSQL("DROP TABLE IF EXISTS FoodCustomizations");
         onCreate(MyDB);
     }
     public void addCategory(Category category) {
@@ -110,7 +124,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return categoryList;
     }
 
-    public void addFoodItem(FoodItem foodItem) {
+    public int addFoodItem(FoodItem foodItem) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("name", foodItem.getName());
@@ -121,8 +135,9 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put("available", foodItem.isAvailable() ? 1 : 0);
         values.put("image", foodItem.getImage());  // Store image as byte array
 
-        db.insert("food_items", null, values);
+        int foodId = (int) db.insert("food_items", null, values);
         db.close();
+        return foodId;
     }
 
     public List<FoodItem> getAllFoodItems() {
@@ -306,5 +321,96 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return foodItemList;
+    }
+    public long addCustomization(Customization customization) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", customization.getName());
+        values.put("price", customization.getPrice());
+
+        long customizationId = db.insert("Customizations", null, values);
+        db.close();
+        return customizationId;
+    }
+
+    public List<Customization> getAllCustomizations() {
+        List<Customization> customizations = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM Customizations", null);
+        if (cursor.moveToFirst()) {
+            do {
+                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex("id"));
+                @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex("name"));
+                @SuppressLint("Range") double price = cursor.getDouble(cursor.getColumnIndex("price"));
+
+                Customization customization = new Customization(id, name, price);
+                customizations.add(customization);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return customizations;
+    }
+
+    public void assignCustomizationsToFoodItem(int foodItemId, List<Integer> customizationIds) {
+        Log.d("DBHelper", "assignCustomizationsToFoodItem called with foodItemId: " + foodItemId + " and customizationIds: " + customizationIds);
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for (int customizationId : customizationIds) {
+                ContentValues values = new ContentValues();
+                values.put("foodItemId", foodItemId);
+                values.put("customizationId", customizationId);
+                long result = db.insert("FoodCustomizations", null, values);
+                if (result == -1) {
+                    Log.e("DBHelper", "Failed to insert customizationId " + customizationId + " for foodItemId " + foodItemId);
+                } else {
+                    Log.d("DBHelper", "Successfully inserted customizationId " + customizationId + " for foodItemId " + foodItemId);
+                }
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        db.close();
+    }
+
+    public void checkDatabase() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("PRAGMA table_info(FoodCustomizations)", null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                @SuppressLint("Range") String columnName = cursor.getString(cursor.getColumnIndex("name"));
+                Log.d("DBHelper", "Column: " + columnName);
+            }
+            cursor.close();
+        }
+        db.close();
+    }
+
+
+
+
+    public List<Customization> getCustomizationsForFoodItem(int foodItemId) {
+        List<Customization> customizations = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT Customizations.id, Customizations.name, Customizations.price " +
+                        "FROM Customizations " +
+                        "INNER JOIN FoodCustomizations ON Customizations.id = FoodCustomizations.customizationId " +
+                        "WHERE FoodCustomizations.foodItemId = ?", new String[]{String.valueOf(foodItemId)});
+        if (cursor.moveToFirst()) {
+            do {
+                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex("id"));
+                @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex("name"));
+                @SuppressLint("Range") double price = cursor.getDouble(cursor.getColumnIndex("price"));
+
+                Customization customization = new Customization(id, name, price);
+                customizations.add(customization);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return customizations;
     }
 }
